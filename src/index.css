@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+:root {
+  --linear-1: oklch(95.878% 0.01549 257.301);
+  --linear-2: oklch(97.195% 0.01072 204.671);
+  --foreground: hsl(226, 11%, 37%);
+  --title: hsl(227, 75%, 14%);
+  --card: hsl(200, 60%, 99%);
+  --border: hsl(0, 0%, 78%);
+  --font-sans: "Noto Sans", sans-serif;
+}
+
+.dark {
+  --linear-1: oklch(14.324% 0.03451 264.613);
+  --linear-2: oklch(21.79% 0.08357 267.089);
+  --foreground: hsl(0, 0%, 78%);
+  --title: hsl(0, 0%, 93%);
+  --card: hsl(226, 25%, 17%);
+  --border: hsl(225, 23%, 24%);
+}
+
+@theme inline {
+  --color-linear1: var(--linear-1);
+  --color-linear2: var(--linear-2);
+  --color-foreground: var(--foreground);
+  --color-title: var(--title);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --font-sans: var(--font-sans);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-gradient-to-br from-linear1 to-linear2 font-sans  min-h-dvh text-foreground text-sm;
+  }
+  p {
+    line-height: 1.6;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply text-title;
+  }
+}
+
+@layer utilities {
+  .container {
+    @apply w-[95%] max-w-7xl mx-auto px-2;
+  }
+}
