@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import extensionsData from "../data/extensions.json";
 
 // Types and interfaces
@@ -61,7 +62,7 @@ const generateId = (name: string): string => {
     .replace(/[^a-z0-9-]/g, "");
 };
 
-// Process the imported data to ensure each extension has an ID
+// Prepare initial extensions
 const initialExtensions: Extension[] = (extensionsData as ExtensionInput[]).map(
   (ext) => ({
     ...ext,
@@ -69,90 +70,102 @@ const initialExtensions: Extension[] = (extensionsData as ExtensionInput[]).map(
   })
 );
 
-// Create the store
-const useExtensionsStore = create<ExtensionsStore>((set, get) => ({
-  // State
-  extensions: initialExtensions,
-  filter: FILTER_TYPES.ALL,
-
-  // Actions
-  toggleExtension: (id: string) => {
-    set((state) => ({
-      extensions: state.extensions.map((ext) =>
-        ext.id === id ? { ...ext, isActive: !ext.isActive } : ext
-      ),
-    }));
-  },
-
-  removeExtension: (id: string) => {
-    set((state) => ({
-      extensions: state.extensions.filter((ext) => ext.id !== id),
-    }));
-  },
-
-  setFilter: (filterType: FilterType) => {
-    set({ filter: filterType });
-  },
-
-  // Getters (computed values)
-  getFilteredExtensions: (): Extension[] => {
-    const { extensions, filter } = get();
-
-    switch (filter) {
-      case FILTER_TYPES.ACTIVE:
-        return extensions.filter((ext) => ext.isActive);
-      case FILTER_TYPES.INACTIVE:
-        return extensions.filter((ext) => !ext.isActive);
-      default:
-        return extensions;
-    }
-  },
-
-  getExtensionById: (id: string): Extension | undefined => {
-    const { extensions } = get();
-    return extensions.find((ext) => ext.id === id);
-  },
-
-  getActiveExtensions: (): Extension[] => {
-    const { extensions } = get();
-    return extensions.filter((ext) => ext.isActive);
-  },
-
-  getInactiveExtensions: (): Extension[] => {
-    const { extensions } = get();
-    return extensions.filter((ext) => !ext.isActive);
-  },
-
-  // Stats
-  getStats: (): ExtensionStats => {
-    const { extensions } = get();
-    const total = extensions.length;
-    const active = extensions.filter((ext) => ext.isActive).length;
-    const inactive = total - active;
-
-    return { total, active, inactive };
-  },
-
-  // Bulk operations
-  activateAll: () => {
-    set((state) => ({
-      extensions: state.extensions.map((ext) => ({ ...ext, isActive: true })),
-    }));
-  },
-
-  deactivateAll: () => {
-    set((state) => ({
-      extensions: state.extensions.map((ext) => ({ ...ext, isActive: false })),
-    }));
-  },
-
-  // Reset to initial state
-  resetExtensions: () => {
-    set({
+// Create the store with persistence
+const useExtensionsStore = create<ExtensionsStore>()(
+  persist(
+    (set, get) => ({
+      // State
       extensions: initialExtensions,
       filter: FILTER_TYPES.ALL,
-    });
-  },
-}));
+
+      // Actions
+      toggleExtension: (id: string) => {
+        set((state) => ({
+          extensions: state.extensions.map((ext) =>
+            ext.id === id ? { ...ext, isActive: !ext.isActive } : ext
+          ),
+        }));
+      },
+
+      removeExtension: (id: string) => {
+        set((state) => ({
+          extensions: state.extensions.filter((ext) => ext.id !== id),
+        }));
+      },
+
+      setFilter: (filterType: FilterType) => {
+        set({ filter: filterType });
+      },
+
+      getFilteredExtensions: (): Extension[] => {
+        const { extensions, filter } = get();
+
+        switch (filter) {
+          case FILTER_TYPES.ACTIVE:
+            return extensions.filter((ext) => ext.isActive);
+          case FILTER_TYPES.INACTIVE:
+            return extensions.filter((ext) => !ext.isActive);
+          default:
+            return extensions;
+        }
+      },
+
+      getExtensionById: (id: string): Extension | undefined => {
+        const { extensions } = get();
+        return extensions.find((ext) => ext.id === id);
+      },
+
+      getActiveExtensions: (): Extension[] => {
+        const { extensions } = get();
+        return extensions.filter((ext) => ext.isActive);
+      },
+
+      getInactiveExtensions: (): Extension[] => {
+        const { extensions } = get();
+        return extensions.filter((ext) => !ext.isActive);
+      },
+
+      getStats: (): ExtensionStats => {
+        const { extensions } = get();
+        const total = extensions.length;
+        const active = extensions.filter((ext) => ext.isActive).length;
+        const inactive = total - active;
+        return { total, active, inactive };
+      },
+
+      activateAll: () => {
+        set((state) => ({
+          extensions: state.extensions.map((ext) => ({
+            ...ext,
+            isActive: true,
+          })),
+        }));
+      },
+
+      deactivateAll: () => {
+        set((state) => ({
+          extensions: state.extensions.map((ext) => ({
+            ...ext,
+            isActive: false,
+          })),
+        }));
+      },
+
+      resetExtensions: () => {
+        set({
+          extensions: initialExtensions,
+          filter: FILTER_TYPES.ALL,
+        });
+      },
+    }),
+    {
+      name: "extensions-storage", // localStorage key
+      partialize: (state) => ({
+        extensions: state.extensions,
+        filter: state.filter,
+      }),
+    }
+  )
+);
 
 export default useExtensionsStore;
