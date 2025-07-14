@@ -3,7 +3,6 @@ import useExtensionsStore, {
   type FilterType,
 } from "@/store/extension-store";
 import FilterTypes from "./filter-type";
-import { useState } from "react";
 import { easeOut, motion } from "framer-motion";
 
 const submenuVariants = {
@@ -19,12 +18,10 @@ const submenuVariants = {
 };
 
 function SubMenu() {
-  const [active, setActive] = useState<FilterType>("all");
-  const { setFilter } = useExtensionsStore();
+  const { filter, setFilter } = useExtensionsStore();
 
   const handleFilterChange = (newFilter: FilterType) => {
     setFilter(newFilter);
-    setActive(newFilter);
   };
 
   return (
@@ -50,17 +47,17 @@ function SubMenu() {
         <FilterTypes
           name="All"
           onClick={() => handleFilterChange(FILTER_TYPES.ALL)}
-          isActive={FILTER_TYPES.ALL === active}
+          isActive={FILTER_TYPES.ALL === filter}
         />
         <FilterTypes
           name="Active"
           onClick={() => handleFilterChange(FILTER_TYPES.ACTIVE)}
-          isActive={FILTER_TYPES.ACTIVE === active}
+          isActive={FILTER_TYPES.ACTIVE === filter}
         />
         <FilterTypes
           name="Inactive"
           onClick={() => handleFilterChange(FILTER_TYPES.INACTIVE)}
-          isActive={FILTER_TYPES.INACTIVE === active}
+          isActive={FILTER_TYPES.INACTIVE === filter}
         />
       </motion.div>
     </motion.div>
