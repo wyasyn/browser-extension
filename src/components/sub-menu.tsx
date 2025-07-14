@@ -34,13 +34,13 @@ function SubMenu() {
       animate="show"
       className="container mt-10 mb-8 lg:mt-20 lg:mb-14 flex flex-col gap-4 items-center md:flex-row md:justify-between"
     >
-      <motion.h2
+      <motion.h1
         layout
         className="text-3xl lg:text-4xl font-semibold"
         transition={{ duration: 0.4 }}
       >
         Extension List
-      </motion.h2>
+      </motion.h1>
 
       <motion.div
         layout
