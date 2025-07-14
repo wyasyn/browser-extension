@@ -26,15 +26,19 @@ function Header() {
         variants={navVariants}
         className="container bg-card/50 backdrop-blur-sm flex items-center justify-between py-3 !px-4 rounded-2xl shadow"
       >
-        <img
-          src={
-            actualTheme === "dark"
-              ? "/images/logo-white.svg"
-              : "/images/logo.svg"
-          }
-          className="h-8 md:h-10"
-          alt="logo"
-        />
+        <h1>
+          <img
+            src={
+              actualTheme === "dark"
+                ? "/images/logo-white.svg"
+                : "/images/logo.svg"
+            }
+            className="h-8 md:h-10"
+            alt="extensions manager"
+          />
+          <span className="sr-only">Extensions manager</span>
+        </h1>
+
         <button
           type="button"
           aria-label={`${actualTheme}-theme`}
